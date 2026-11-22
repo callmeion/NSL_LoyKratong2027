@@ -4,6 +4,6 @@
 // ห้ามใส่ secret key / service_role key เด็ดขาด
 // ถ้าปล่อยว่าง เว็บจะทำงานโหมดทดสอบ (เก็บข้อมูลในเครื่องของผู้ใช้เท่านั้น)
 window.NSL_CONFIG = {
-  SUPABASE_URL: '',
-  SUPABASE_ANON_KEY: ''
+  SUPABASE_URL: 'https://echdjsbzniszvupyznmx.supabase.co',
+  SUPABASE_ANON_KEY: 'sb_publishable_bCfg7PHtSY1v547OdGeyYQ_bqfGyFJS'
 };
