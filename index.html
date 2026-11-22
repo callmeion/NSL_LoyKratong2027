@@ -321,6 +321,20 @@ function isCleanText(text) {
   const clean = raw.toLowerCase().replace(/[\s._\-*#@!$%^&()+=~`'"]/g, '').replace(/(.)\1{2,}/g, '$1');
   return !BAD_WORDS.some(w => clean.includes(w));
 }
+  document.addEventListener('click', function(e) {
+  if (!e.target.closest('.btn.go')) return;
+  const fields = document.querySelectorAll('input, textarea');
+  for (const el of fields) {
+    if (!isCleanText(el.value)) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const lang = document.documentElement.lang || 'th';
+      const errEl = document.querySelector('.err');
+      if (errEl) errEl.textContent = FILTER_ERR_MSG[lang] || FILTER_ERR_MSG.th;
+      return;
+    }
+  }
+}, true);
 </script>
 </body>
 </html>
