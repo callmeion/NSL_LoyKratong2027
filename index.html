@@ -111,12 +111,34 @@ html[lang=my] body{line-height:1.75}html[lang=km] body{line-height:1.6}
 .kz.tC{--ib:25.0%;--fb:25.3%}
 .kz.tD{--fl:20%;--fw:60%;--ib:30.0%;--fb:24.5%}
 .kz.tE{--ib:30.0%;--fb:23.9%}
+/* ===== เด็กว่ายน้ำมาเก็บเหรียญ ===== */
+.kid{position:absolute;left:0;z-index:2;pointer-events:none;will-change:transform}
+.kid svg{display:block;width:100%;overflow:visible;transition:transform .35s}
+.kid .bd{animation:kbob 1s ease-in-out infinite}
+@keyframes kbob{0%,100%{transform:translateY(0)}50%{transform:translateY(2.5px)}}
+.kid .arm{transform-box:view-box;transform-origin:68px 64px;transition:transform .45s}
+.kid.sw .arm{animation:kstroke 1.05s linear infinite}
+@keyframes kstroke{from{transform:rotate(0)}to{transform:rotate(-360deg)}}
+.kid.grab .arm{transform:rotate(-58deg)}
+.kid.out svg{transform:scaleX(-1)}
+.kid.out .arm{transform:rotate(-8deg)}
+.kid .hc{opacity:0;transition:opacity .3s}
+.kid.has .hc{opacity:1}
+.kid .spl{opacity:0}
+.kid.sw .spl,.kid.out .spl{opacity:1}
+.kid .spl circle{transform-box:fill-box;transform-origin:center;animation:kspl .7s ease-out infinite}
+.kid .spl circle:nth-child(2){animation-delay:-.25s}.kid .spl circle:nth-child(3){animation-delay:-.5s}
+@keyframes kspl{0%{transform:translate(0,0) scale(1);opacity:.9}100%{transform:translate(6px,-10px) scale(.3);opacity:0}}
+.kb{position:absolute;bottom:92%;left:50%;transform:translate(-50%,6px) scale(.8);white-space:nowrap;background:#fff;color:#0b2a55;font-weight:600;border-radius:14px;padding:4px 10px;box-shadow:0 3px 10px rgba(0,0,0,.35);opacity:0;transition:opacity .3s,transform .3s}
+.kb::after{content:'';position:absolute;left:50%;top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:#fff}
+.kb.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.coin{position:absolute;left:0;top:0;border-radius:50%;z-index:3;pointer-events:none;display:flex;align-items:center;justify-content:center;font-weight:700;color:#8a5a00;background:radial-gradient(circle at 35% 30%,#fff7b8,#f5c518 45%,#c48a08);box-shadow:0 0 10px rgba(255,210,60,.9)}
 
 </style>
 </head>
 <body>
 <div class="bg"></div>
-<div id="wiz">
+<div id="wiz" style="display:none">
   <div class="lang"></div>
   <header><h1><span>NSL FOODS</span> · <b data-i="sub" style="font-weight:600">ลอยกระทงออนไลน์</b></h1><p data-i="tag">ร่วมลอยกระทงอธิษฐานขอพรไปด้วยกัน</p></header>
   <main class="card" id="card"></main>
@@ -177,9 +199,9 @@ function load(){try{const a=JSON.parse(localStorage.getItem(KEY)||'null');if(Arr
 function save(a){try{localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}}
 let list=load();
 async function getRecent(){
- if(SB){try{const r=await fetch(SB.u+'?select=k,fl,f,n,w&order=id.desc&limit=6',{headers:SB.h});if(r.ok)return await r.json()}catch(e){}return []}
- if(API){try{const r=await fetch(API+'?limit=6');return await r.json()}catch(e){}}
- return list.slice(-6).reverse();
+ if(SB){try{const r=await fetch(SB.u+'?select=k,fl,f,n,w&order=id.desc&limit=7',{headers:SB.h});if(r.ok)return await r.json()}catch(e){}return []}
+ if(API){try{const r=await fetch(API+'?limit=7');return await r.json()}catch(e){}}
+ return list.slice(-7).reverse();
 }
 async function post(e){
  if(SB){const r=await fetch(SB.u,{method:'POST',headers:Object.assign({Prefer:'return=minimal'},SB.h),body:JSON.stringify({k:e.k,fl:e.fl,f:e.f,n:e.n,w:e.w})});if(!r.ok)throw new Error(await r.text());return}
@@ -234,7 +256,7 @@ function render(){
  if(S.step==2){h+=`<h2>${tr('s2')}</h2>`+FLn().map(([id,n,m])=>`<button class="tile row ${S.fl==id?'sel':''}" data-fl="${id}">${fSvg(id)}<div><b>${id}. ${n}</b><span>${m}</span></div></button>`).join('')}
  if(S.step==3){h+=`<h2>${tr('s3')}</h2><div class="grid">`+FLAGS.map(f=>`<button class="tile ${S.f==f.id?'sel':''}" data-f="${f.id}"><div class="lgb">${f.img?`<div class="lg lg-${f.id}"></div>`:f.n}</div>${f.id}. ${f.n}</button>`).join('')+`</div>`}
  if(S.step==4){h+=`<h2>${tr('s4')}</h2><label for="n">${tr('name')}</label><input id="n" maxlength="25" placeholder="${tr('ph1')}"><div class="cnt" id="nc"></div><label for="w">${tr('wish')}</label><textarea id="w" maxlength="80" placeholder="${tr('ph2')}"></textarea><div class="cnt" id="wc"></div><div class="err" id="er"></div>`}
- h+=`<div class="nav">${S.step>1?'<button class="btn alt" id="bk">'+tr('back')+'</button>':''}${S.step<4?'<button class="btn" id="nx">'+tr('next')+'</button>':'<button class="btn go" id="fl">'+tr('go')+'</button>'}</div>`;
+ h+=`<div class="nav">${'<button class="btn alt" id="bk">'+tr('back')+'</button>'}${S.step<4?'<button class="btn" id="nx">'+tr('next')+'</button>':'<button class="btn go" id="fl">'+tr('go')+'</button>'}</div>`;
  card.innerHTML=h;
  if(S.step==4){const n=document.getElementById('n'),w=document.getElementById('w');n.value=S.n;w.value=S.w;
   const u=()=>{S.n=n.value;S.w=w.value;document.getElementById('nc').textContent=n.value.length+'/25';document.getElementById('wc').textContent=w.value.length+'/80'};n.oninput=w.oninput=u;u()}
@@ -243,7 +265,7 @@ card.addEventListener('click',e=>{
  const t=e.target.closest('[data-k],[data-fl],[data-f]');
  if(t){if(t.dataset.k)S.k=t.dataset.k;if(t.dataset.fl)S.fl=t.dataset.fl;if(t.dataset.f)S.f=t.dataset.f;render();return}
  if(e.target.id=='nx'){S.step++;render()}
- if(e.target.id=='bk'){S.step--;render()}
+ if(e.target.id=='bk'){if(S.step>1){S.step--;render()}else home()}
  if(e.target.id=='fl')float();
 });
 
@@ -259,26 +281,93 @@ async function float(){
  const er=document.getElementById('er'),n=S.n.trim(),w=S.w.trim();
  if(!n){er.textContent=tr('e1');return}
  if(!w){er.textContent=tr('e2');return}
+ if(!isCleanText(n)||!isCleanText(w)){er.textContent=FILTER_ERR_MSG[lang]||FILTER_ERR_MSG.th;return}
  if(!API&&!SB&&list.length>=MAX){er.textContent=tr('full').replace('{n}',MAX);return}
  const prev=await getRecent();
  const me={k:S.k,fl:S.fl,f:S.f,n:n.slice(0,25),w:w.slice(0,80),t:Date.now()};
  try{await post(me)}catch(x){er.textContent=/FULL/.test(String(x.message))?tr('full').replace('{n}',MAX):tr('err');return}
+ showScene(prev,me);
+}
+/* แสดงฉากแม่น้ำ: กระทงอื่นลอยผ่าน + กระทงเด่นตรงกลาง (me) ที่มีเด็กว่ายมาเก็บเหรียญเป็นระยะ */
+async function showScene(prev,me){
  document.getElementById('wiz').style.display='none';
  document.getElementById('scene').style.display='block';
- const tt=await total();cntN=tt==null?'':tt+' / '+MAX;setCnt();
  const field=document.getElementById('field');field.querySelectorAll('.dr').forEach(x=>x.remove());
  prev.slice(0,6).forEach((e,i)=>{const L=LANES[i%3],k=Math.floor(i/3),d=node(e,L.w);
   d.style.top=L.y+'%';d.style.animationDuration=L.dur+'s';d.style.animationDelay=(-L.dur*(k/2+(i%3)*.17+.08)).toFixed(1)+'s';field.appendChild(d)});
- field.appendChild(node(me,'clamp(190px,30vw,340px)',' me'));
+ if(me){const meN=node(me,'clamp(190px,30vw,340px)',' me');field.appendChild(meN);
+  (async()=>{let first=true;while(meN.isConnected){await kidSwim(meN,first);first=false;await kwait(7000)}})()}
+ const tt=await total();cntN=tt==null?'':tt+' / '+MAX;setCnt();
+}
+/* หน้าแรก: เปิดมาเจอฉากกระทงลอย (กระทงใบล่าสุดอยู่ตรงกลาง) */
+async function home(){
+ const r=await getRecent();showScene(r.slice(1),r[0]);
+}
+/* ===== เด็กว่ายน้ำมาเก็บเหรียญในกระทง (หลังกระทงลอยเข้าที่) ===== */
+const KIDT={th:'ขอบคุณครับ!',my:'ကျေးဇူးတင်ပါတယ်!',km:'អរគុណ!',lo:'ຂອບໃຈເດີ້!'};
+let kidRun=0;
+const kwait=ms=>new Promise(r=>setTimeout(r,ms));
+const KID_SVG=`<svg viewBox="0 0 120 100" aria-hidden="true"><defs><clipPath id="kclip"><rect x="-20" y="-40" width="160" height="113"/></clipPath></defs>
+<g class="bd"><g clip-path="url(#kclip)">
+ <ellipse cx="64" cy="76" rx="24" ry="12" fill="#d9a066"/>
+ <g class="arm"><rect x="63.5" y="28" width="9" height="40" rx="4.5" fill="#e2ac72"/><circle cx="68" cy="29" r="6" fill="#e9b780"/>
+  <g class="hc"><circle cx="68" cy="19" r="7" fill="#f5c518" stroke="#c48a08" stroke-width="1.5"/><text x="68" y="22.5" font-size="9" font-weight="700" text-anchor="middle" fill="#8a5a00">฿</text></g></g>
+ <circle cx="56" cy="51" r="19" fill="#ebb67c"/>
+ <circle cx="73" cy="53" r="4" fill="#d9a066"/>
+ <path d="M37 50C36 30 76 27 75 48C70 41 63 40 57 42C50 39 42 43 37 50Z" fill="#2a1a10"/>
+ <ellipse cx="45" cy="51" rx="2.2" ry="2.6" fill="#2a1a10"/><circle cx="44.3" cy="50.2" r=".8" fill="#fff"/>
+ <circle cx="50" cy="57" r="3.2" fill="#f29a8a" opacity=".6"/>
+ <path d="M40 58Q44 62 48 58" fill="none" stroke="#7a3b1c" stroke-width="1.6" stroke-linecap="round"/>
+</g></g>
+<ellipse cx="60" cy="73" rx="36" ry="5" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.6"/>
+<g class="spl" fill="rgba(220,245,255,.9)"><circle cx="86" cy="70" r="2.4"/><circle cx="92" cy="72" r="1.8"/><circle cx="80" cy="71" r="1.5"/></g>
+</svg><div class="kb"></div>`;
+async function kidSwim(me,first=true){
+ const run=++kidRun,alive=()=>run===kidRun&&me.isConnected;
+ // รอบแรก: รอให้กระทงลอยเข้าที่ก่อน (จบแอนิเมชัน enter) แล้วค่อยให้เด็กว่ายมา
+ if(first)await Promise.race([new Promise(r=>me.addEventListener('animationend',e=>{if(e.target===me)r()})),kwait(11000)]);
+ await kwait(400);if(!alive())return;
+ const W=me.querySelector('.kr').offsetWidth,K=Math.max(90,W*.52),far=innerWidth/2+K+40,xt=W*.3;
+ const kid=document.createElement('div');kid.className='kid sw';kid.style.width=K+'px';kid.style.bottom=(-.24*K)+'px';
+ kid.innerHTML=KID_SVG;const kb=kid.querySelector('.kb');kb.style.fontSize=Math.max(12,K*.13)+'px';kb.textContent=KIDT[lang]||KIDT.th;
+ kid.style.transform=`translateX(${far}px)`;me.appendChild(kid);
+ // 1) ว่ายเข้ามาหากระทง
+ await kid.animate([{transform:`translateX(${far}px)`},{transform:`translateX(${xt}px)`}],{duration:4200,easing:'cubic-bezier(.25,.6,.35,1)',fill:'forwards'}).finished;
+ if(!alive())return;
+ // 2) เอื้อมมือหยิบเหรียญ
+ kid.classList.replace('sw','grab');await kwait(450);
+ const C=Math.max(16,W*.075),hx=xt+K*.48,hy=-K*.62;
+ for(let i=0;i<3;i++){
+  if(!alive())return;
+  const c=document.createElement('div');c.className='coin';c.textContent='฿';
+  Object.assign(c.style,{width:C+'px',height:C+'px',marginLeft:-C/2+'px',marginTop:-C/2+'px',fontSize:C*.6+'px'});me.appendChild(c);
+  const x0=(i-1)*W*.12,y0=-W*.3;
+  c.animate([{transform:`translate(${x0}px,${y0}px) scale(.4)`,opacity:0},{transform:`translate(${(x0+hx)/2}px,${y0-W*.28}px) scale(1.1) rotate(180deg)`,opacity:1,offset:.5},{transform:`translate(${hx}px,${hy}px) scale(.6) rotate(360deg)`,opacity:1}],{duration:850,easing:'ease-in-out',fill:'forwards'}).finished.then(()=>{c.remove();kid.classList.add('has')});
+  await kwait(380);
+ }
+ await kwait(600);if(!alive())return;
+ kb.classList.add('show');await kwait(1600);if(!alive())return;
+ // 3) ชูเหรียญแล้วว่ายกลับออกไป
+ kid.classList.replace('grab','out');await kwait(500);kb.classList.remove('show');
+ await kid.animate([{transform:`translateX(${xt}px)`},{transform:`translateX(${far}px)`}],{duration:5200,easing:'cubic-bezier(.5,0,.75,.6)',fill:'forwards'}).finished;
+ kid.remove();
 }
 document.getElementById('again').onclick=()=>{S.step=1;S.n='';S.w='';document.getElementById('scene').style.display='none';document.getElementById('wiz').style.display='block';render()};
-applyLang();render();
+applyLang();render();home();
+/* ===== ตัวกรองคำหยาบ / ข้อความไม่เหมาะสม =====
+   เพิ่มคำได้ที่ BAD_WORDS (เขียนแบบปกติ ไม่ต้องเว้นวรรค ระบบจะตัดช่องว่าง/จุด/สัญลักษณ์/ตัวซ้ำให้เอง)
+   ถ้าคำปกติโดนบล็อกผิด ให้เพิ่มคำนั้นใน SAFE_WORDS */
 const BAD_WORDS = [
   // ===== ภาษาไทย (คำหยาบ / ด่าทอ) =====
-  'ควย', 'เย็ด', 'เหี้ย', 'สัส', 'สัด', 'มึง', 'กู', 'หี', 'แตด', 'เงี่ยน',
-  'พ่อง', 'แม่ง', 'ระยำ', 'จัญไร', 'สถุล', 'ตอแหล', 'อีดอก', 'กะหรี่',
-  'ดอกทอง', 'ส้นตีน', 'ชิบหาย', 'ฉิบหาย', 'ชาติชั่ว', 'สันดาน', 'เฮงซวย',
-  'ห่วยแตก', 'ไอ้ควาย', 'อีควาย', 'ไอ้บ้า', 'ไอ้โง่', 'ปัญญาอ่อน', 'หมาไม่แดก',
+  'ควย', 'คว ย', 'ขวย', 'เย็ด', 'เยด', 'เย๊ด', 'เย็ส', 'เย็ดแม่', 'เยดแม่', 'เย็ดเข้',
+  'เหี้ย', 'เหี่ย', 'เหี้ยะ', 'เชี่ย', 'เชี้ย', 'เฮี้ย', 'อีเหี้ย', 'ไอ้เหี้ย', 'ไอเหี้ย',
+  'สัส', 'ส้ส', 'สัสส', 'ไอ้สัส', 'ไอสัส', 'อีสัส', 'ไอ้สัตว์', 'ไอสัตว์', 'อีสัตว์', 'สัตว์นรก',
+  'สัด', 'มึง', 'มืง', 'มรึง', 'กู', 'หี', 'หำ', 'จิ๋ม', 'แตด', 'เงี่ยน', 'ร่าน', 'อีร่าน',
+  'พ่อง', 'แม่ง', 'พ่อมึง', 'แม่มึง', 'โคตรพ่อ', 'โคตรแม่', 'โคตรพ่อโคตรแม่', 'ห่าราก', 'ไอ้ห่า', 'อีห่า',
+  'ระยำ', 'จัญไร', 'สถุล', 'ตอแหล', 'อีดอก', 'ดอกทอง', 'กะหรี่', 'อีกะหรี่', 'ลูกกะหรี่', 'แรด', 'อีแรด',
+  'ส้นตีน', 'ชิบหาย', 'ฉิบหาย', 'ชาติชั่ว', 'ชาติหมา', 'ลูกหมา', 'สันดาน', 'เฮงซวย', 'ฟาย', 'ไอ้ฟาย',
+  'ห่วยแตก', 'ไอ้ควาย', 'อีควาย', 'ไอควาย', 'ไอ้บ้า', 'ไอ้โง่', 'อีโง่', 'ปัญญาอ่อน', 'หมาไม่แดก', 'แดก',
+  'ไอ้เวร', 'อีเวร', 'เวรตะไล', 'ไอ้หน้าหี', 'หน้าหี', 'ไอ้ส้นตีน', 'ตายห่า', 'ไปตายซะ', 'ไปตาย',
 
   // ===== ภาษาไทย (ด่าบริษัท / แช่งองค์กร) =====
   'บริษัทห่วย', 'บริษัทกาก', 'บริษัทเฮงซวย', 'บริษัทส้นตีน', 'บริษัทเหี้ย',
@@ -298,10 +387,17 @@ const BAD_WORDS = [
   'ក្ត', 'កន្ដួយ', 'ចុយ', 'ចុយម្រាយ', 'អាចុយម្រាយ', 'មីសំផឹង',
   'អាឆ្កែ', 'អាថោកទាប', 'អាល្ងង់', 'ក្រុមហ៊ុនអន់', 'ក្រុមហ៊ុនថោកទាប',
 
-  // ===== ภาษาอังกฤษ & สแปม/พนัน =====
-  'fuck', 'shit', 'bitch', 'asshole', 'dick', 'pussy', 'porn', 'xxx',
-  'sucks', 'scam', 'worstcompany', 'badcompany',
-  'เว็บพนัน', 'บาคาร่า', 'สล็อต', 'แทงบอล', 'เครดิตฟรี'
+  // ===== ภาษาอังกฤษ / คาราโอเกะ & สแปม/พนัน =====
+  'fuck', 'fuk', 'fck', 'phuck', 'shit', 'bitch', 'biatch', 'asshole', 'bastard', 'cunt', 'dick', 'pussy',
+  'porn', 'motherfucker', 'wtf', 'stfu', 'sucks', 'scam', 'worstcompany', 'badcompany',
+  'kuay', 'khuay', 'heeya', 'heeyai', 'yedmae', 'mueng',
+  'เว็บพนัน', 'บาคาร่า', 'สล็อต', 'แทงบอล', 'เครดิตฟรี', 'คาสิโน', 'หวยออนไลน์'
+];
+
+/* คำปกติที่บังเอิญมีคำหยาบซ่อนอยู่ข้างใน (เช่น ตระกูล มี "กู", สัดส่วน มี "สัด") — ตัดออกก่อนตรวจ */
+const SAFE_WORDS = [
+  'ตระกูล', 'สกุล', 'กู้', 'กู๊ด', 'กูเกิล', 'กูเกิ้ล', 'กูรู', 'หีบ', 'สัดส่วน', 'แม่งาน', 'แดกดัน',
+  'scampi', 'dickens'
 ];
 
 const FILTER_ERR_MSG = {
@@ -311,26 +407,41 @@ const FILTER_ERR_MSG = {
   lo: 'ກະລຸນາໃຊ້ຄຳເວົ້າທີ່ສຸພາບ ແລະ ບໍ່ໃສ່ລິ້ງ ຫຼື ເບີໂທລະສັບ'
 };
 
+/* ทำให้ข้อความอยู่ในรูปเดียวกันก่อนเทียบ: ตัวเล็ก, ตัดช่องว่าง/สัญลักษณ์/ตัวอักษรล่องหน,
+   แปลงตัวเลข/สัญลักษณ์ที่ใช้แทนตัวอักษร (f*ck, sh1t, @ss), ยุบตัวซ้ำ (ควยยยย → ควย) */
+const LEET = { '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '@': 'a', '$': 's', '!': 'i' };
+function normText(s) {
+  return String(s).normalize('NFC').toLowerCase()
+    .replace(/[​-‍⁠﻿­]/g, '')
+    .replace(/[013457@$!]/g, c => LEET[c])
+    .replace(/[^\p{L}\p{M}]/gu, '')
+    .replace(/(.)\1{2,}/gu, '$1$1')
+    .replace(/(.)\1+/gu, '$1');
+}
+const BAD_N = [...new Set(BAD_WORDS.map(normText).filter(Boolean))];
+const SAFE_N = SAFE_WORDS.map(normText).filter(Boolean).sort((a, b) => b.length - a.length);
+
 function isCleanText(text) {
   if (!text) return true;
-  const raw = text.trim();
-  if (/(https?:\/\/|www\.|[a-z0-9-]+\.(com|net|org|co|th|xyz|bet|vip)|line\.me)/i.test(raw)) return false;
-  if (/\d{9,}/.test(raw.replace(/[\s-]/g, ''))) return false;
-  if (/<[^>]*>/g.test(raw)) return false;
-
-  const clean = raw.toLowerCase().replace(/[\s._\-*#@!$%^&()+=~`'"]/g, '').replace(/(.)\1{2,}/g, '$1');
-  return !BAD_WORDS.some(w => clean.includes(w));
+  const raw = String(text).trim();
+  if (/(https?:\/\/|www\.|[a-z0-9-]+\.(com|net|org|co|th|xyz|bet|vip|me|io|ly)|line\.me|@\w{3,})/i.test(raw)) return false; // ลิงก์ / ไอดีไลน์
+  if (/\d{9,}/.test(raw.replace(/[\s\-.]/g, ''))) return false;  // เบอร์โทร
+  if (/<[^>]*>/.test(raw)) return false;                          // แท็ก HTML
+  let t = normText(raw);
+  for (const w of SAFE_N) t = t.split(w).join('|');
+  return !BAD_N.some(w => t.includes(w));
 }
-  document.addEventListener('click', function(e) {
-  if (!e.target.closest('.btn.go')) return;
-  const fields = document.querySelectorAll('input, textarea');
-  for (const el of fields) {
+
+/* กันอีกชั้นตอนกดปุ่ม (float() ก็ตรวจซ้ำอีกที) */
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('#fl')) return;
+  for (const el of document.querySelectorAll('#card input, #card textarea')) {
     if (!isCleanText(el.value)) {
       e.preventDefault();
       e.stopImmediatePropagation();
-      const lang = document.documentElement.lang || 'th';
-      const errEl = document.querySelector('.err');
+      const errEl = document.getElementById('er');
       if (errEl) errEl.textContent = FILTER_ERR_MSG[lang] || FILTER_ERR_MSG.th;
+      el.focus();
       return;
     }
   }
